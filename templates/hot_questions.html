@@ -1,0 +1,25 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="d-flex gap-3 align-items-center">
+        <h1>Hot Questions</h1>
+        <a href="/">New Questions</a>
+    </div>
+
+        <div class="col-md-8 col-sm-12">
+            {% for question in questions %}
+                {% include "components/question.html" with item=question%}
+            {% endfor %}
+
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+        {% endblock %}

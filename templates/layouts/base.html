@@ -1,0 +1,73 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %} "/>
+    <title>Bootstrap demo</title>
+</head>
+<body class="d-flex flex-column min-vh-100">
+<nav class="navbar bg-body-tertiary">
+    <div class="container-sm-fluid container-lg">
+        <div class="d-flex gap-3 align-items-center">
+        <a href="/" class="navbar-brand">AskMe</a>
+        <a href="/ask" class="btn btn-outline-success" role="button">ASK</a>
+        </div>
+            <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success me" type="submit">Search</button>
+        </form>
+        <div class="d-flex justify-content-between gap-3">
+            <div class="border">
+                <img src="{% static '/img/avatar.png' %}" width="50" height="50">
+            </div>
+            <div class="d-flex flex-column justify-content-between">
+                <div>Dr. Peep</div>
+                <div>
+                    <a href="/settings.html">Settings</a>
+                    <a href="/logout.html">Log out</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container-sm-fluid container-lg mt-3">
+    <div class="row">
+
+        {% block content %}
+        {% endblock %}
+        <div class="col-md-4 col-sm-12">
+            <h3>Popular Tags</h3>
+            <div class="col">
+                <span class="badge text-bg-primary">Primary</span>
+                <span class="badge text-bg-secondary">Secondary</span>
+                <span class="badge text-bg-success">Success</span>
+                <span class="badge text-bg-danger">Danger</span>
+                <span class="badge text-bg-warning">Warning</span>
+                <span class="badge text-bg-info">Info</span>
+                <span class="badge text-bg-light">Light</span>
+                <span class="badge text-bg-dark">Dark</span>
+            </div>
+            <h3 class="mt-5">Best Members</h3>
+            <div>
+                <a class="d-block" href="/member.html">Jeff Bezos</a>
+                <a class="d-block" href="/member.html">Jeff Bezos</a>
+                <a class="d-block" href="/member.html">Jeff Bezos</a>
+            </div>
+        </div>
+
+    </div>
+    </div>
+</main>
+</body>
+<footer class="bd-footer mt-auto py-3 bg-light">
+    <div class="container">
+        <span class="text-muted">Place sticky footer content here.</span>
+    </div>
+</footer>
+
+</html>

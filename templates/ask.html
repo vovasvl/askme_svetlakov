@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex gap-3 align-items-center">
+    <h1>New Question</h1>
+</div>
+<div class="col-md-8 col-sm-12 mt-1">
+    <div class="row mb-1">
+        <div class="col-1 pt-1 d-flex">
+                Title
+                        <p style="color:red">*</p>
+        </div>
+        <div class="col-11">
+            <form class="d-flex" role="search">
+                <input class="form-control ms-4 me-4" type="search" placeholder="Search" aria-label="Search"
+                style="border-color: rgba(229, 103, 23, 0.8);">
+            </form>
+            <p class="ms-4" style="color:red"> Fill in this field</p>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-1 pt-1">
+                Text
+        </div>
+        <div class="col-11">
+            <form class="d-flex" role="search">
+                <textarea class="form-control ms-4 me-4" type="search" style="height: 300px; resize: none;"
+                          placeholder="Search" aria-label="Search">
+                    </textarea>
+            </form>
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-1 pt-1">
+                Tags
+        </div>
+        <div class="col-11">
+            <form class="d-flex" role="search">
+                <input class="form-control ms-4 me-4" type="search" placeholder="Search" aria-label="Search">
+
+            </form>
+            <button class="btn btn-outline-success ms-4 mt-4" type="submit">ASK</button>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
