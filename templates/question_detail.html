@@ -9,19 +9,23 @@
             {% include "components/question.html" with item=question %}
 
             <hr>
+            {% for answer in answers %}
+            {% include "components/answer.html" with item=answer%}
+            {% endfor %}
 
-            {% include "components/answer.html" with item=question%}
+            <form class="d-flex flex-column mb-4" role="search">
+
+                <textarea class="form-control" type="search" style="height: 200px; resize: none;"
+                          placeholder="Enter your answer here" aria-label="Search"
+                ></textarea>
+                <button class="btn btn-outline-success mt-4" style="width: 100px" type="submit">Answer!</button>
+
+            </form>
 
 
 
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                </ul>
-            </nav>
+
+            {% include "components/pagination.html" with page_obj=answers %}
+
         </div>
         {% endblock %}
