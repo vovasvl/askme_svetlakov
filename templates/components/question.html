@@ -10,7 +10,7 @@
                             <div class="input-group mb-3">
 
                                 <div class="form-floating">
-                                    <input type="number" value="5" class="form-control" id="floatingInputGroup1"
+                                    <input type="number" value="{{item.get_score}}" class="form-control" id="floatingInputGroup1"
                                            placeholder="Username">
                                     <label for="floatingInputGroup1">Username</label>
                                 </div>
@@ -24,11 +24,12 @@
                             </h5>
                             <p class="card-text">{{item.text}}</p>
                             <div class="row mt-auto">
-                                <a class="col-4" href="/question.html">answers (3)</a>
+                                <a class="col-4" href="{% url "question" item.id %}">answers ({{item.get_answers_count}})</a>
                                 <div class="col-8">
                                     <span>Tags</span>
-                                    <a href="/tag.html">tag</a>
-                                    <a href="/tag.html">tag</a>
+                                    {% for tag in item.tags.all %}
+                                        <a href="{% url "tag" tag.name %}">{{tag.name}}</a>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
