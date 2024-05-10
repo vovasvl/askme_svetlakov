@@ -6,14 +6,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %} "/>
-    <title>ЭС КАК ДОЛЛАР</title>
+    <title>Askme</title>
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav class="navbar bg-body-tertiary">
     <div class="container-sm-fluid container-lg">
         <div class="d-flex gap-3 align-items-center">
-        <a href="/" class="navbar-brand">AskMe</a>
-        <a href="/ask" class="btn btn-outline-success" role="button">ASK</a>
+        <a href="{% url "index" %}" class="navbar-brand">AskMe</a>
+        <a href="{% url "ask" %}" class="btn btn-outline-success" role="button">ASK</a>
         </div>
             <form class="d-flex" role="search">
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">

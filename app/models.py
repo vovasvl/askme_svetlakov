@@ -1,9 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Count
+
 
 class TagManager(models.Manager):
     def get_tag(self, tag_name):
         return self.get(name=tag_name)
+    #!def order_by_questions_count(self, n=5):
+    #!!!    return sorted(self.get_queryset(), key=lambda x: Question.objects.get_by_tag(x).count(), reverse=True)
 class Tag(models.Model):
     name = models.CharField(max_length=255)
 
@@ -32,7 +36,8 @@ class QuestionManager(models.Manager):
     def order_by_created_at(self):
         return self.get_queryset().order_by('-created_at')
     def order_by_score(self):
-        return sorted(self.get_queryset(), key=lambda x: x.get_score(), reverse=True)
+        return self.get_queryset().annotate(score_count=Count('questionlike')).order_by('-score_count')
+        #return sorted(self.get_queryset(), key=lambda x: x.get_score(), reverse=True)
     def filter_by_tag(self, tag):
         return self.filter(tags=tag)
 class Question(models.Model):

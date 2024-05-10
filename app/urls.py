@@ -1,8 +1,8 @@
 
-
-from django.urls import path, re_path
+from django.urls import path
 
 from app import views
+
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -13,6 +13,6 @@ urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('settings/', views.settings, name='settings'),
     path('tag/<str:tag_name>', views.tag, name='tag'),
-    re_path(r'', views.raiseError, name='raise404'),
+    #re_path(r'', handler404, name='raise404'),
 
 ]

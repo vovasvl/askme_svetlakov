@@ -10,7 +10,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         ratio = options['ratio']
         locale_list=['dk_DK', 'el_GR', 'en_AU', 'en_CA', 'en_GB', 'en_IN', 'en_NZ', 'en_US', 'es_ES', 'es_MX', 'et_EE', 'fa_IR', 'fi_FI', 'fr_FR', 'hi_IN', 'hr_HR', 'hu_HU', 'hy_AM', 'it_IT', 'ja_JP', 'ko_KR', 'lt_LT', 'lv_LV', 'ne_NP', 'nl_NL', 'no_NO', 'pl_PL', 'pt_BR', 'pt_PT', 'ro_RO', 'ru_RU', 'sk_SK', 'sl_SI', 'sv_SE', 'tr_TR', 'uk_UA', 'zh_CN', 'zh_TW']
-        fake  = Faker(locale_list)
+        fake= Faker('en_US')
+        fakeMultiLang = Faker(locale_list)
 
 
         users=[User(username=fake.unique.name(), password=fake.password(), email=fake.email(), first_name=fake.first_name()) for i in range(ratio)]
@@ -21,7 +22,30 @@ class Command(BaseCommand):
         Profile.objects.bulk_create(profiles)
         print("profile")
 
-        tags = [Tag(name=fake.word()) for i in range(ratio)]
+        generated_words = set()
+        def generate_unique_word():
+            k=0
+            flag = 0
+            while True:
+                if k>2000:
+                    k=0
+                    flag+=1
+
+                if flag==0:
+                    word = fakeMultiLang.word()
+                elif flag==1:
+                    word = fakeMultiLang.job().split('/')[0]
+                elif flag==2:
+                    word = fakeMultiLang.country()
+                else:
+                    word = fakeMultiLang.first_name()
+                if word not in generated_words:
+                    generated_words.add(word)
+                    print(len(generated_words)*100/ratio)
+                    return word
+                k+=1
+
+        tags = [Tag(name=generate_unique_word()) for i in range(ratio)]
         Tag.objects.bulk_create(tags)
         print("tags")
 
@@ -31,12 +55,13 @@ class Command(BaseCommand):
         Question.objects.bulk_create(questions)
         for i in range(10*ratio):
             questions[i].tags.add(*sample(tags,randint(2,5)))
+            print(i*10/ratio)
         print("questions")
 
         db.reset_queries()
 
-        answers = [Answer(profile=profiles[randint(0,ratio-1)], question=questions[randint(0,10*ratio-1)], text=fake.text(max_nb_chars=200), correct=['c','i'][randint(0,1)] ) for i in range(100*ratio)]
-        batch_size = 10000
+        answers = [Answer(profile=profiles[randint(0,ratio-1)], question=questions[randint(0,10*ratio-1)], text=fakeMultiLang.text(max_nb_chars=200), correct=['c','i'][randint(0,1)] ) for i in range(100*ratio)]
+        batch_size = 500
 
         for i in range(0, 100*ratio, batch_size):
             batch = answers[i:i + batch_size]
@@ -54,10 +79,11 @@ class Command(BaseCommand):
         QuestionLike.objects.bulk_create(questionLikes)
         print("questionLikes")
 
-        answerLikes=[]
+
         for i in range(ratio):
+            answerLikes=[]
             for j in sample(answers,180):
                 answerLikes.append(AnswerLike(profile=profiles[i], answer=j))
-        AnswerLike.objects.bulk_create(answerLikes)
+            AnswerLike.objects.bulk_create(answerLikes)
         print("answerLikes")
 
