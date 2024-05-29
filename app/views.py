@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage
+from django.db.models import QuerySet
 from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
 from math import ceil
@@ -29,7 +30,6 @@ def pagination(objects_list, request,per_page=PAGANATION_PER_PAGE):
 def index(request):
     if request.user.is_authenticated:
         avatar = Profile.objects.filter(user=request.user).get().avatar
-        print(avatar.url)
     else:
         avatar = None
     questions=pagination(Question.objects.order_by_created_at(), request)
@@ -42,6 +42,7 @@ def hot(request):
     return render(request, "hot_questions.html", {"questions": questions})
 
 def question(request, question_id):
+    print(request.headers)
     try:
         question = Question.objects.get_question(question_id)
     except Question.DoesNotExist:
@@ -89,6 +90,8 @@ def Login(request):
             user = authenticate(request, **loginForm.cleaned_data)
             if user:
                 login(request, user)
+                if(request.GET.get('next')):
+                    return redirect((request.GET.get('next')))
                 return redirect(reverse('index'))
             else:
                 loginForm.add_error(None, "Пользователя с такими данными не существует")
@@ -101,9 +104,7 @@ def signup(request):
             return redirect(reverse('index'))
         registerForm = RegisterForm()
     if request.method == 'POST':
-        print(request.POST)
         registerForm = RegisterForm(data=request.POST, files=request.FILES)
-        print("registerForm",registerForm.data)
         if registerForm.is_valid():
             user = registerForm.save()
             if user:
@@ -131,7 +132,6 @@ def settings(request):
             return redirect(reverse('settings'))
 
     return render(request, "settings.html", context={"form": settingsForm, "avatar": avatar})
-    #return render(request, "settings.html")
 def tag(request, tag_name):
     try:
         tag = Tag.objects.get_tag(tag_name)
@@ -143,18 +143,20 @@ def tag(request, tag_name):
     return render(request, "tag.html", {"tag_name": tag_name, "questions": questions})
 
 @require_http_methods(["POST"])
-@login_required(login_url="login")
 @csrf_protect
 def like_async(request, question_id):
+    if not request.user.is_authenticated:
+        return redirect(reverse('login'))
     body = QuestionLike.objects.like_async(request, question_id)
 
     return JsonResponse(body)
 
 
 @require_http_methods(["POST"])
-@login_required(login_url="login")
 @csrf_protect
 def like_async_answer(request, answer_id):
+    if not request.user.is_authenticated:
+        return redirect(reverse('login'))
     body = AnswerLike.objects.like_async(request, answer_id)
 
     return JsonResponse(body)

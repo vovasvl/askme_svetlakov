@@ -114,8 +114,9 @@ class QuestionForm(forms.ModelForm):
     def clean_tags(self):
         tags = self.cleaned_data['tags']
         for tag in tags.split():
-            if('/' in tag):
-                self.add_error('tags', 'В тегах запрещено использовать символ /')
+            if any(c in "!@#$%^&*()-+?_=,<>/" for c in tag):
+                self.add_error('tags', 'В тегах запрещено использовать специальные символы')
+                break
         return tags
     class Meta:
         model = Question

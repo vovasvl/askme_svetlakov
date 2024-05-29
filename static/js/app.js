@@ -16,7 +16,6 @@ function getCookie(name) {
 const init = () => {
 
     const cards = document.querySelectorAll('.card')
-    const question_detail = document.querySelector('.question_detail')
     const correct = document.querySelectorAll('.correct')
     if(cards) {
         for(const card of cards) {
@@ -31,7 +30,7 @@ const init = () => {
 
             LikeButton.addEventListener('click', () => {
                 const request = new Request(id + url, {
-                    method: 'post',
+                    method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCookie('csrftoken')
@@ -42,7 +41,14 @@ const init = () => {
                     })
                 })
                 fetch(request)
-                    .then((response) => response.json())
+                    .then((response)=> {
+                      if (response.url != request.url) {
+                         window.location.href = response.url;
+                         return;
+                      } else {
+                         return response.json();
+                      }
+                   })
                     .then((data) => {
                         LikeCounter.value = data.likes_count
                     })
@@ -50,31 +56,7 @@ const init = () => {
             })
         }
     }
-    if(question_detail) {
 
-        const LikeButton = question_detail.querySelector('.LikeButton')
-        const LikeCounter = question_detail.querySelector('.LikeCount')
-        const questionId = question_detail.dataset.questionId
-
-        LikeButton.addEventListener('click', () => {
-            const request = new Request(questionId + '/like_async', {
-                method: 'post',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCookie('csrftoken')
-                },
-                body: JSON.stringify({
-                    key: 'value',
-                    key2: 'value2'
-                })
-            })
-            fetch(request)
-                .then((response) => response.json())
-                .then((data) => {
-                    LikeCounter.value = data.likes_count
-                })
-        })
-    }
     if(correct) {
         for(const correctCheckBox of correct) {
             const answerId = correctCheckBox.dataset.answerId
@@ -85,10 +67,7 @@ const init = () => {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': getCookie('csrftoken')
                     },
-                    body: JSON.stringify({
-                        key: 'value',
-                        key2: 'value2'
-                    })
+
                 })
                 fetch(request)
                     .then((response) => response.json())
