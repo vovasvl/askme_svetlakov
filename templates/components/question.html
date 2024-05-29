@@ -1,18 +1,25 @@
 {% load static %}
 
-<article class="card mb-3 w-100 h-30">
+<article class="card mb-3 w-100 h-30" data-question-id="{{question.id}}">
                 <div class="row g-0">
                     <div class="col-3 p-2">
                         <div class="border w-100 mb-3" style="flex: auto;">
-                            <img src="{% static '/img/img.jpg' %}" class="img-fluid rounded-start" >
+                            {% if item.profile.avatar %}
+                            <img src="{{ item.profile.avatar.url }}" class="img-fluid rounded-start" >
+                            {% else %}
+                            <img src="{% static '/img/default.jpg' %}" class="img-fluid rounded-start" >
+                            {% endif %}
                         </div>
                         <div>
                             <div class="input-group mb-3">
 
-                                <div class="form-floating">
-                                    <input type="number" value="{{item.get_score}}" class="form-control" id="floatingInputGroup1"
-                                           placeholder="Username" readonly>
-                                    <label for="floatingInputGroup1">Rating</label>
+                                <div class="form-floating d-flex gap-5align-items-center">
+                                    <input type="text" value="{{item.get_score}}" class="form-control LikeCount"
+                                           onkeydown="return false;"
+                                           id="LikeCount" style="width:50%" readonly>
+                                    <label for="LikeCount">Rating</label>
+                                    <button class="btn btn-outline-secondary LikeButton" type="button"
+                                            id="button-addon1" style="height:100%">Like</button>
                                 </div>
                             </div>
                         </div>

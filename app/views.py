@@ -1,15 +1,16 @@
 from django.contrib.auth import authenticate, logout, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import render, redirect
 from math import ceil
 
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.http import require_http_methods
 
 from app.forms import LoginForm, RegisterForm, SettingsForm, QuestionForm, AnswerForm
-from app.models import Question, Tag, Answer, Profile
+from app.models import Question, Tag, Answer, Profile, AnswerLike, QuestionLike
 
 PAGANATION_PER_PAGE = 5
 # Create your views here.
@@ -140,3 +141,28 @@ def tag(request, tag_name):
     questions = pagination(Question.objects.filter_by_tag(tag), request)
 
     return render(request, "tag.html", {"tag_name": tag_name, "questions": questions})
+
+@require_http_methods(["POST"])
+@login_required(login_url="login")
+@csrf_protect
+def like_async(request, question_id):
+    body = QuestionLike.objects.like_async(request, question_id)
+
+    return JsonResponse(body)
+
+
+@require_http_methods(["POST"])
+@login_required(login_url="login")
+@csrf_protect
+def like_async_answer(request, answer_id):
+    body = AnswerLike.objects.like_async(request, answer_id)
+
+    return JsonResponse(body)
+
+@require_http_methods(["POST"])
+@login_required(login_url="login")
+@csrf_protect
+def correct_async(request, answer_id):
+    body = Answer.objects.correct_async(request, answer_id)
+
+    return JsonResponse(body)

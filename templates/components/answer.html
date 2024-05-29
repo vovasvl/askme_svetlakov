@@ -1,31 +1,53 @@
 {% load static %}
 
-<article class="card mb-3 w-100">
+<article class="card mb-3 w-100" data-answer-id="{{answer.id}}">
                 <div class="row g-0">
                     <div class="col-3 p-2">
                         <div class="border w-100 mb-3" style="flex: auto;">
-                            <img src="{% static '/img/img.jpg' %}" class="img-fluid rounded-start" >
+                            {% if item.profile.avatar %}
+                            <img src="{{ item.profile.avatar.url }}" class="img-fluid rounded-start" >
+                            {% else %}
+                            <img src="{% static '/img/default.jpg' %}" class="img-fluid rounded-start" >
+                            {% endif %}
                         </div>
-                        <div>
-                            <div class="input-group mb-3">
+                        <div class="input-group mb-3">
 
-                                <div class="form-floating">
-                                    <input type="number" value="{{item.get_score}}" class="form-control" id="floatingInputGroup1"
-                                           placeholder="Username" readonly>
-                                    <label for="floatingInputGroup1">Rating</label>
+                                <div class="form-floating d-flex gap-3 align-items-center">
+                                    <input type="text" value="{{item.get_score}}" class="form-control LikeCount"
+                                           onkeydown="return false;"
+                                           id="LikeCount" style="width:50%" readonly>
+                                    <label for="LikeCount">Rating</label>
+                                    <button class="btn btn-outline-secondary LikeButton" type="button"
+                                            id="button-addon1" style="height:100%">Like</button>
                                 </div>
-                            </div>
                         </div>
                     </div>
                     <div class="col-9">
                         <div class="card-body d-flex flex-column h-100">
                             <p class="card-text">{{item.text}}</p>
-                            <div class="form-check mt-auto">
-                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-                              <label class="form-check-label" for="flexCheckDefault">
-                                Correct!
-                              </label>
-                            </div>
+                                <div class="form-check ms-3">
+              {% if user == question.profile.user %}
+                {% if answer.correct == "c" %}
+                  <input class="form-check-input correct" type="checkbox" id="flexCheckDefault" data-answer-id="{{answer.id}}" checked>
+                {% else %}
+                  <input class="form-check-input correct" type="checkbox" id="flexCheckDefault" data-answer-id="{{answer.id}}">
+                {% endif %}
+                <label class="form-check-label" for="flexCheckDefault">Correct!</label>
+              {% else %}
+                {% if answer.correct == "c"%}
+                  <input class="form-check-input" type="checkbox"  id="flexCheckDefault" onclick="return false;" checked>
+                {% else %}
+                  <input class="form-check-input" type="checkbox" id="flexCheckDefault" onclick="return false;">
+                {% endif %}
+                  <label class="form-check-label" for="flexCheckDefault">Correct!</label>
+              {% endif %}
+            </div>
+<!--                            <div class="form-check mt-auto">-->
+<!--                              <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">-->
+<!--                              <label class="form-check-label" for="flexCheckDefault">-->
+<!--                                Correct!-->
+<!--                              </label>-->
+<!--                            </div>-->
                         </div>
                     </div>
                 </div>
