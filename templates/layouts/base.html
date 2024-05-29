@@ -10,7 +10,7 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
 <nav class="navbar bg-body-tertiary">
-    <div class="container-sm-fluid container-lg">
+    <div class="container-sm-fluid container-lg" style="height:56px">
         <div class="d-flex gap-3 align-items-center">
         <a href="{% url "index" %}" class="navbar-brand">AskMe</a>
         <a href="{% url "ask" %}" class="btn btn-outline-success" role="button">ASK</a>
@@ -19,19 +19,30 @@
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-success me" type="submit">Search</button>
         </form>
-        <div class="d-flex justify-content-between gap-3">
+        {% if user.is_authenticated %}
+        <div class="d-flex justify-content-between gap-3" style="width:184px">
             <div class="border">
-                <img src="{% static '/img/avatar.png' %}" width="50" height="50">
+                <img src="{{ avatar.url }}" class = "account_img" width="50" height="50">
             </div>
             <div class="d-flex flex-column justify-content-between">
-                <div>Dr. Peep</div>
+                <div>{{user.first_name}}</div>
                 <div>
                     <a href="{% url "settings" %}">Settings</a>
-                    <a href="/logout.html">Log out</a>
+                    <a href="{% url "logout" %}">Log out</a>
                 </div>
 
             </div>
         </div>
+        {% else %}
+        <div class="d-flex justify-content-between gap-3" style="width:184px">
+
+                    <a href="{% url "login" %}" class="ms-3">Log In</a>
+                    <a href="{% url "signup" %}" class="me-3">Sign Up</a>
+
+
+
+        </div>
+        {% endif %}
     </div>
 </nav>
 

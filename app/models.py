@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Count
 
+from askme_svetlakov.settings import STATIC_URL
+
 
 class TagManager(models.Manager):
     def get_tag(self, tag_name):
@@ -22,7 +24,7 @@ class Tag(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    avatar = models.ImageField(upload_to="", default=None, blank=True, null=True)
+    avatar = models.ImageField(upload_to="images", default=STATIC_URL + 'img/imgg.jpg', blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -61,7 +63,7 @@ class Question(models.Model):
 
 class AnswerManager(models.Manager):
     def get_by_question(self, question):
-        return self.filter(question=question)
+        return self.filter(question=question).order_by('created_at')
 class Answer(models.Model):
     profile = models.ForeignKey(Profile, on_delete=models.PROTECT)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)

@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% load static %}
+{% load bootstrap5 %}
 
 {% block content %}
 
@@ -8,19 +9,18 @@
 
             {% include "components/question.html" with item=question %}
 
+            {% if user.is_authenticated %}
+            <form method="post" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+            {% endif %}
             <hr>
+
             {% for answer in answers %}
             {% include "components/answer.html" with item=answer%}
             {% endfor %}
-
-            <form class="d-flex flex-column mb-4" role="search">
-
-                <textarea class="form-control" type="search" style="height: 200px; resize: none;"
-                          placeholder="Enter your answer here" aria-label="Search"
-                ></textarea>
-                <button class="btn btn-outline-success mt-4" style="width: 100px" type="submit">Answer!</button>
-
-            </form>
 
 
 

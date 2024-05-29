@@ -1,28 +1,39 @@
-from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, logout, login
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator, EmptyPage
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from math import ceil
 
-from app.models import Question, Tag, Answer
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_protect
+
+from app.forms import LoginForm, RegisterForm, SettingsForm, QuestionForm, AnswerForm
+from app.models import Question, Tag, Answer, Profile
+
+PAGANATION_PER_PAGE = 5
 # Create your views here.
 
-def pagination(objects_list, request,per_page=5): #перехватывать ошибки django
+def pagination(objects_list, request,per_page=PAGANATION_PER_PAGE):
     page_num = request.GET.get('page', 1)
-    try:
-        if (int(page_num)<1 or int(page_num) > ceil(len(objects_list) / per_page)):
-            page_num=1
-
-    except ValueError:
-        page_num=1
     paginator = Paginator(objects_list, per_page)
-    page_obj = paginator.page(page_num)
+    try:
+        page_obj = paginator.page(page_num)
+    except EmptyPage:
+        page_obj = paginator.page(1)
+
+
     return page_obj
 
 def index(request):
-
+    if request.user.is_authenticated:
+        avatar = Profile.objects.filter(user=request.user).get().avatar
+        print(avatar.url)
+    else:
+        avatar = None
     questions=pagination(Question.objects.order_by_created_at(), request)
 
-    return render(request, "index.html", {"questions": questions})
+    return render(request, "index.html", {"questions": questions, "avatar": avatar})
 
 def hot(request):
 
@@ -30,7 +41,6 @@ def hot(request):
     return render(request, "hot_questions.html", {"questions": questions})
 
 def question(request, question_id):
-
     try:
         question = Question.objects.get_question(question_id)
     except Question.DoesNotExist:
@@ -38,18 +48,89 @@ def question(request, question_id):
 
     answers = pagination(Answer.objects.get_by_question(question), request)
 
+    if request.user.is_authenticated:
+        avatar = Profile.objects.filter(user=request.user).get().avatar
+    else:
+        avatar = None
 
-    return render(request, "question_detail.html", {"question": question, "answers": answers})
-
+    if request.method == "GET":
+        answerForm = AnswerForm()
+    if request.method == "POST":
+        answerForm = AnswerForm(data=request.POST)
+        if answerForm.is_valid():
+            answer = answerForm.save(question, Profile.objects.filter(user=request.user).get())
+            answer.save()
+            ind = list(Answer.objects.get_by_question(question)).index(answer)
+            return redirect('{}?{}'.format(reverse('question', kwargs={'question_id': answer.question.id}),'page=' + str(ind // PAGANATION_PER_PAGE + 1)))
+    return render(request, "question_detail.html",
+                  {"question": question, "answers": answers, "form": answerForm, "avatar": avatar})
+@csrf_protect
+@login_required(login_url="login")
 def ask(request):
-    return render(request, "ask.html")
-def login(request):
-    return render(request, "login.html")
+    avatar = Profile.objects.filter(user=request.user).get().avatar
 
+    if request.method == "GET":
+        questionForm = QuestionForm()
+    if request.method == "POST":
+        questionForm = QuestionForm(data=request.POST)
+        if questionForm.is_valid():
+            question = questionForm.save(Profile.objects.filter(user=request.user).get())
+            question.save()
+            return redirect(reverse('question', kwargs={'question_id': question.id}))
+    return render(request, "ask.html", {"form": questionForm, "avatar": avatar})
+@csrf_protect
+def Login(request):
+    if request.method == 'GET':
+        loginForm = LoginForm()
+    if request.method == 'POST':
+        loginForm = LoginForm(data=request.POST)
+        if loginForm.is_valid():
+            user = authenticate(request, **loginForm.cleaned_data)
+            if user:
+                login(request, user)
+                return redirect(reverse('index'))
+            else:
+                loginForm.add_error(None, "Пользователя с такими данными не существует")
+    return render(request, "login.html", context={"form": loginForm})
+
+@csrf_protect
 def signup(request):
-    return render(request, "signup.html")
+    if request.method == 'GET':
+        if request.user.is_authenticated:
+            return redirect(reverse('index'))
+        registerForm = RegisterForm()
+    if request.method == 'POST':
+        print(request.POST)
+        registerForm = RegisterForm(data=request.POST, files=request.FILES)
+        print("registerForm",registerForm.data)
+        if registerForm.is_valid():
+            user = registerForm.save()
+            if user:
+                login(request,user)
+                return redirect(reverse('index'))
+            else:
+                registerForm.add_error(field=None, error="User saving error!")
+    return render(request, "signup.html", context={"form": registerForm})
+
+@csrf_protect
+@login_required(login_url="login")
+def Logout(request):
+    logout(request)
+    return redirect(reverse('login'))
+@csrf_protect
+@login_required(login_url="login")
 def settings(request):
-    return render(request, "settings.html")
+    avatar = Profile.objects.filter(user=request.user).get().avatar
+    if request.method == 'GET':
+        settingsForm = SettingsForm(data={"first_name": request.user.first_name, "email": request.user.email, "username": request.user.username}, instance=request.user)
+    if request.method == 'POST':
+        settingsForm = SettingsForm(data=request.POST, instance=request.user,files=request.FILES)
+        if settingsForm.is_valid():
+            settingsForm.save()
+            return redirect(reverse('settings'))
+
+    return render(request, "settings.html", context={"form": settingsForm, "avatar": avatar})
+    #return render(request, "settings.html")
 def tag(request, tag_name):
     try:
         tag = Tag.objects.get_tag(tag_name)

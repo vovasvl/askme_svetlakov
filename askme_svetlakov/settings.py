@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles'
+    'django.contrib.staticfiles',
+    'bootstrap5'
 ]
 
 MIDDLEWARE = [
@@ -136,7 +137,8 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_ROOT = BASE_DIR / "uploads"
-
+print("mediaRoot", MEDIA_ROOT)
+MEDIA_URL = '/uploads/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 

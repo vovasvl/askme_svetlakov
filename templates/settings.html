@@ -1,69 +1,31 @@
 {% extends "layouts/base.html" %}
 {% load static %}
+{% load bootstrap5 %}
 
 {% block content %}
 <div class="d-flex gap-3 align-items-center">
-    <h1>Settings: Dr. Peep</h1>
+    <h1>Settings: {{ user.first_name }}</h1>
 </div>
 <div class="col-md-8 col-sm-12 mt-1">
-    <div class="row mb-3">
-        <div class="col-2 pt-1 d-flex">
-            Login
-        </div>
-        <div class="col-4">
-            <form class="d-flex" role="search">
-                <input class="form-control ms-4 me-4" type="search" placeholder="Search" aria-label="Search">
-            </form>
-        </div>
+    <div class="col-md-6 col-sm-12 mt-1">
+        <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+<!--    <button class="btn btn-outline-success ms-4 mt-4" type="submit">Save!</button>-->
+<!--    <div class="row">-->
+<!--        <div class="col-2">-->
+
+<!--        </div>-->
+<!--        <div class="col-10">-->
+<!--            <div class="mb-2">-->
+<!--                <button class="btn btn-outline-success ms-4 mt-4" type="submit">Save!</button>-->
+<!--            </div>-->
+
+<!--        </div>-->
+
+<!--    </div>-->
     </div>
-
-    <div class="row mb-3">
-        <div class="col-2 pt-1 d-flex">
-            Email
-        </div>
-        <div class="col-4">
-            <form class="d-flex" role="search">
-                <input class="form-control ms-4 me-4" type="search" placeholder="Search" aria-label="Search">
-            </form>
-        </div>
-    </div>
-    <div class="row mb-3">
-        <div class="col-2 pt-1 d-flex">
-            NickName
-        </div>
-        <div class="col-4">
-            <form class="d-flex" role="search">
-                <input class="form-control ms-4 me-4" type="search" placeholder="Search" aria-label="Search">
-            </form>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-2 pt-1 d-flex">
-            Upload avatar
-        </div>
-        <div class="col-10">
-            <div class="ms-4 mb-2">
-                <img class="border" src="{% static '/img/avatar.png' %}" width="100" height="100">
-            </div>
-            <form class="d-flex" role="search">
-                <input class="form-control ms-4 " type="file" placeholder="Search" aria-label="Search">
-
-            </form>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-
-        </div>
-        <div class="col-10">
-            <div class="mb-2">
-                <button class="btn btn-outline-success ms-4 mt-4" type="submit">Register!</button>
-            </div>
-
-        </div>
-
-    </div>
-
 </div>
 {% endblock %}
